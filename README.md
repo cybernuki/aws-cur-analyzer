@@ -30,10 +30,10 @@ This tool helps you quickly get insights into your AWS service consumption direc
 ```text
 aws-cur-analyzer/
 ├── backend/
-│   ├── src/                
-│   │   └── app/           
-│   │       ├── main.py     
-│   │       └── processor.py
+│   ├── app/                
+│   │   ├── main.py           
+│   │   └── processor.py    
+│   │ 
 │   ├── Dockerfile
 │   └── requirements.txt    
 ├── frontend/
