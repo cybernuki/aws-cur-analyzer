@@ -44,4 +44,4 @@ def process_parquet_file(file_contents: bytes):
     except Exception as e:
         # Loguear el error si tienes un sistema de logging
         print(f"Error processing Parquet file: {e}")
-        return {"error": f"Failed to process Parquet file: {str(e)}"}
+        return {"error": f"Failed to process Parquet file: {str(e)}"}   
