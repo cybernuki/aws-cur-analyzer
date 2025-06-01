@@ -45,10 +45,10 @@ const [file, setFile] = useState<File | null>(null);
         throw new Error(errorData.detail || `Error: ${response.statusText}`);
       }
 
-      const data: ReportItem[] = await response.json(); // Tipar la respuesta
+      const data: ReportItem[] = await response.json(); // Type the response
       setReport(data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) { // Tipar el error capturado
+    } catch (err: any) { // Type the caught error
       console.error("Upload failed:", err);
       setError(err.message || 'Ocurrió un error al procesar el archivo.');
     } finally {
@@ -56,28 +56,47 @@ const [file, setFile] = useState<File | null>(null);
     }
   };
 
+  const handleNewUpload = () => {
+    setReport(null);
+    setFile(null);
+    setError('');
+  };
+
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>Analizador de Consumo AWS (CUR)</h1>
-        <p className={styles.description}>Sube tu archivo <code>.parquet</code> diario del AWS Cost and Usage Report.</p>
+      {!report ? (
+        // Show upload form when no data
+        <main className={styles.main}>
+          <h1 className={styles.title}>Analizador de Consumo AWS (CUR)</h1>
+          <p className={styles.description}>Sube tu archivo <code>.parquet</code> diario del AWS Cost and Usage Report.</p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            accept=".parquet"
-            className={styles.fileInput}
-          />
-          <button type="submit" disabled={isLoading || !file} className={styles.submitButton}>
-            {isLoading ? 'Procesando...' : 'Generar Informe'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.fileInputContainer}>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                accept=".parquet"
+                className={styles.fileInput}
+              />
+            </div>
+            <button type="submit" disabled={isLoading || !file} className={styles.submitButton}>
+              {isLoading ? (
+                <div className={styles.loading}>
+                  <div className={styles.loadingSpinner}></div>
+                  Procesando...
+                </div>
+              ) : (
+                'Generar Informe'
+              )}
+            </button>
+          </form>
 
-        {error && <p className={styles.error}>{error}</p>}
-
-        {report && <ReportTable data={report} />}
-      </main>
+          {error && <p className={styles.error}>{error}</p>}
+        </main>
+      ) : (
+        // Show table with upload option
+        <ReportTable data={report} onNewUpload={handleNewUpload} />
+      )}
     </div>
   );
 }

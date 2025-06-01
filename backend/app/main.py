@@ -1,14 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware # Para permitir peticiones desde Next.js
+from fastapi.middleware.cors import CORSMiddleware # To allow requests from Next.js
 from .processor import process_parquet_file
 
 app = FastAPI()
 
-# Configuración de CORS
-# Permitir orígenes específicos en producción
+# CORS configuration
+# Allow specific origins in production
 origins = [
-    "http://localhost:3000", # Para desarrollo local de Next.js
-    # "https://tu-dominio-de-frontend.com" # Para producción
+    "http://localhost:3000", # For local Next.js development
+    # "https://your-frontend-domain.com" # For production
 ]
 
 app.add_middleware(
