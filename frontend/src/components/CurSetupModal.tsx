@@ -140,6 +140,28 @@ export default function CurSetupModal({ isOpen, onClose }: CurSetupModalProps) {
             </div>
           </div>
 
+          {/* Privacidad y Seguridad de Datos */}
+          <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h4 className="text-sm font-medium text-green-800">🔒 Privacidad y Seguridad de tus Datos</h4>
+                <div className="mt-2 text-sm text-green-700">
+                  <ul className="space-y-1">
+                    <li>• <strong>Tus datos NO se guardan:</strong> Los archivos .parquet solo se procesan temporalmente</li>
+                    <li>• <strong>Procesamiento local:</strong> El análisis se realiza en memoria y se descarta inmediatamente</li>
+                    <li>• <strong>Sin persistencia:</strong> No hay bases de datos, logs permanentes ni almacenamiento de datos</li>
+                    <li>• <strong>Privacidad total:</strong> Tus datos de facturación AWS permanecen completamente privados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Información importante */}
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
             <div className="flex">
@@ -175,24 +197,31 @@ DiscountedUsage          | 25.8                   | AmazonRDS              | ...
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-between items-center">
-          <div className="text-sm text-gray-500">
-            💡 ¿Necesitas más ayuda?{' '}
-            <a
-              href="https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
+        <div className="px-6 py-4 bg-gray-50 rounded-b-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="text-sm text-gray-500">
+              <div className="mb-2">
+                🔒 <strong>Recordatorio:</strong> Tus datos se procesan localmente y no se almacenan en ningún servidor.
+              </div>
+              <div>
+                💡 ¿Necesitas más ayuda?{' '}
+                <a
+                  href="https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Consulta la documentación oficial de AWS CUR
+                </a>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors flex-shrink-0"
             >
-              Consulta la documentación oficial de AWS CUR
-            </a>
+              ¡Entendido!
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors"
-          >
-            ¡Entendido!
-          </button>
         </div>
       </div>
     </div>
