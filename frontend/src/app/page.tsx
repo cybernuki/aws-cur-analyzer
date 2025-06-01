@@ -4,6 +4,7 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import ReportTable from '@/components/ReportTable';
 import styles from '@/styles/Home.module.css';
 import { ReportItem } from '@/types/ReportItem';
+import HelpModal from '@/components/HelpModal';
 
 // Security configuration
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
@@ -133,6 +134,7 @@ const [file, setFile] = useState<File | null>(null);
         // Show table with upload option
         <ReportTable data={report} onNewUpload={handleNewUpload} />
       )}
+      <HelpModal />
     </div>
   );
 }
