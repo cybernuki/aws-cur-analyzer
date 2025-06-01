@@ -6,8 +6,30 @@ interface DataVisualizationProps {
   data: ReportItem[];
 }
 
+interface UnitAnalysis {
+  totalConsumption: number;
+  services: Set<string>;
+  usageTypes: Set<string>;
+  records: ReportItem[];
+}
+
+interface TopConsumptionItem extends ReportItem {
+  key: string;
+  unitKey: string;
+}
+
+interface ProcessedData {
+  unitAnalysis: Record<string, UnitAnalysis>;
+  serviceByUnit: Record<string, number>;
+  topConsumptionItems: TopConsumptionItem[];
+  totalServices: number;
+  totalRecords: number;
+  totalUnits: number;
+  uniqueUsageTypes: number;
+}
+
 export default function DataVisualization({ data }: DataVisualizationProps) {
-  const [processedData, setProcessedData] = useState<any>(null);
+  const [processedData, setProcessedData] = useState<ProcessedData | null>(null);
 
   useEffect(() => {
     if (!data || data.length === 0) return;
@@ -28,7 +50,7 @@ export default function DataVisualization({ data }: DataVisualizationProps) {
       acc[unit].usageTypes.add(item.TipoDeUso);
       acc[unit].records.push(item);
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, UnitAnalysis>);
 
     // Service consumption by unit
     const serviceByUnit = data.reduce((acc, item) => {
@@ -107,7 +129,7 @@ export default function DataVisualization({ data }: DataVisualizationProps) {
         <div className={styles.analysisCard}>
           <h3 className={styles.chartTitle}>📊 Análisis por Unidad de Medida</h3>
           <div className={styles.unitAnalysisTable}>
-            {Object.entries(processedData.unitAnalysis).map(([unit, analysis]: [string, any]) => (
+            {Object.entries(processedData.unitAnalysis).map(([unit, analysis]: [string, UnitAnalysis]) => (
               <div key={unit} className={styles.unitRow}>
                 <div className={styles.unitHeader}>
                   <span className={styles.unitName}>{unit}</span>
@@ -131,7 +153,7 @@ export default function DataVisualization({ data }: DataVisualizationProps) {
               <span>Unidad</span>
               <span>Cantidad</span>
             </div>
-            {processedData.topConsumptionItems.map((item: any, index: number) => (
+            {processedData.topConsumptionItems.map((item: TopConsumptionItem, index: number) => (
               <div key={`${item.key}-${index}`} className={styles.costRow}>
                 <div className={styles.costService}>
                   <span className={styles.rank}>#{index + 1}</span>

@@ -1,11 +1,13 @@
 # Stage 1: Build
-FROM node:18-alpine AS builder
+FROM node:22.16-slim AS builder
 WORKDIR /app
 
 # Copy configuration and dependency files
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY next.config.ts ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
 # If you have other configuration files in the frontend root, copy them as well
 
 RUN npm install
@@ -17,7 +19,7 @@ COPY ./src ./src
 RUN npm run build
 
 # Stage 2: Production
-FROM node:18-alpine
+FROM node:22.16-slim
 WORKDIR /app
 
 # Copy only necessary artifacts from the build stage
