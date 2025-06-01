@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from '@/styles/ReportTable.module.css';
 import { ReportItem } from '@/types/ReportItem';
+import DataVisualization from './DataVisualization';
 
 interface ReportTableProps {
   data: ReportItem[];
@@ -40,6 +41,7 @@ export default function ReportTable({ data, onBack, onNewUpload }: ReportTablePr
 
   const services = Object.keys(groupedData);
   const allTabKey = 'TODOS_LOS_SERVICIOS';
+  const visualizationTabKey = 'VISUALIZACIONES';
 
   // Set initial active tab if not set
   if (!activeTab && services.length > 0) {
@@ -108,6 +110,14 @@ export default function ReportTable({ data, onBack, onNewUpload }: ReportTablePr
           <span className={styles.tabCount}>({data.length})</span>
         </button>
 
+        {/* Visualization Tab */}
+        <button
+          onClick={() => setActiveTab(visualizationTabKey)}
+          className={`${styles.tab} ${activeTab === visualizationTabKey ? styles.activeTab : ''}`}
+        >
+          📊 Visualizaciones
+        </button>
+
         {/* Tabs by service */}
         {services.map((service) => (
           <button
@@ -121,32 +131,37 @@ export default function ReportTable({ data, onBack, onNewUpload }: ReportTablePr
         ))}
       </div>
 
-      <div className={styles.tableContainer}>
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                {columns.map((column) => (
-                  <th key={column} className={styles.tableHeader}>
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((row, rowIndex) => (
-                <tr key={rowIndex} className={styles.tableRow}>
+      {/* Content area - show visualization or table based on active tab */}
+      {activeTab === visualizationTabKey ? (
+        <DataVisualization data={data} />
+      ) : (
+        <div className={styles.tableContainer}>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
                   {columns.map((column) => (
-                    <td key={`${rowIndex}-${column}`} className={styles.tableCell}>
-                      {String(row[column])}
-                    </td>
+                    <th key={column} className={styles.tableHeader}>
+                      {column}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentData.map((row, rowIndex) => (
+                  <tr key={rowIndex} className={styles.tableRow}>
+                    {columns.map((column) => (
+                      <td key={`${rowIndex}-${column}`} className={styles.tableCell}>
+                        {String(row[column])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

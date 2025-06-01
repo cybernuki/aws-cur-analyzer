@@ -5,6 +5,28 @@ import ReportTable from '@/components/ReportTable';
 import styles from '@/styles/Home.module.css';
 import { ReportItem } from '@/types/ReportItem';
 
+// Security configuration
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
+const validateFile = (file: File): string | null => {
+  // Validate file size
+  if (file.size > MAX_FILE_SIZE) {
+    return `Archivo muy grande. Tamaño máximo permitido: ${MAX_FILE_SIZE / (1024 * 1024)}MB`;
+  }
+
+  // Validate file extension
+  if (!file.name.toLowerCase().endsWith('.parquet')) {
+    return 'Solo se permiten archivos .parquet';
+  }
+
+  // Validate minimum file size
+  if (file.size < 100) {
+    return 'El archivo parece estar vacío o corrupto';
+  }
+
+  return null; // File is valid
+};
+
 export default function Home() {
 const [file, setFile] = useState<File | null>(null);
   const [report, setReport] = useState<ReportItem[] | null>(null);
@@ -13,7 +35,21 @@ const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+      const selectedFile = event.target.files[0];
+
+      // Validate file before setting it
+      const validationError = validateFile(selectedFile);
+      if (validationError) {
+        setError(validationError);
+        setFile(null);
+        setReport(null);
+        // Clear the input
+        event.target.value = '';
+        return;
+      }
+
+      // File is valid
+      setFile(selectedFile);
       setReport(null); // Reset report when new file is selected
       setError('');
     }

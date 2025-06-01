@@ -1,5 +1,54 @@
 import pandas as pd
 import io
+import os
+
+# Security and data validation configuration
+MAX_RECORDS = int(os.getenv("MAX_RECORDS", 100000))  # Maximum number of records to process
+REQUIRED_COLUMNS = [
+    'line_item_line_item_type',
+    'line_item_usage_amount',
+    'line_item_product_code',
+    'line_item_usage_type',
+    'pricing_unit'
+]
+
+def sanitize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Sanitize and validate DataFrame structure for security and data integrity.
+    """
+    # Validate number of records
+    if len(df) > MAX_RECORDS:
+        raise ValueError(f"Too many records. Maximum allowed: {MAX_RECORDS:,}")
+
+    # Validate required columns exist
+    missing_columns = [col for col in REQUIRED_COLUMNS if col not in df.columns]
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+
+    # Validate data types and sanitize
+    try:
+        # Ensure usage amount is numeric and non-negative
+        df['line_item_usage_amount'] = pd.to_numeric(df['line_item_usage_amount'], errors='coerce')
+        df = df[df['line_item_usage_amount'] >= 0]  # Remove negative values
+
+        # Remove rows with null usage amounts
+        df = df.dropna(subset=['line_item_usage_amount'])
+
+        # Sanitize string columns - remove potential injection characters
+        string_columns = ['line_item_product_code', 'line_item_usage_type', 'pricing_unit']
+        for col in string_columns:
+            if col in df.columns:
+                # Remove potentially dangerous characters and limit length
+                df[col] = df[col].astype(str).str.replace(r'[<>"\';]', '', regex=True).str[:100]
+
+        # Validate final record count
+        if len(df) == 0:
+            raise ValueError("No valid records found after data sanitization")
+
+        return df
+
+    except Exception as e:
+        raise ValueError(f"Data sanitization failed: {str(e)}")
 
 def process_parquet_file(file_contents: bytes):
     """
@@ -9,6 +58,9 @@ def process_parquet_file(file_contents: bytes):
         # Read the Parquet file from memory content
         parquet_file = io.BytesIO(file_contents)
         df = pd.read_parquet(parquet_file)
+
+        # SECURITY: Sanitize and validate DataFrame
+        df = sanitize_dataframe(df)
 
         # Filter only by 'Usage' type items or relevant for consumption
         # Adjust these according to the line types you consider "usage"
@@ -21,9 +73,8 @@ def process_parquet_file(file_contents: bytes):
             # return {"message": "No 'Usage' line items found matching the criteria."}
             return [] # Return empty list if there are no relevant usage items
 
-        # Ensure line_item_usage_amount is numeric
-        df_usage['line_item_usage_amount'] = pd.to_numeric(df_usage['line_item_usage_amount'], errors='coerce')
-        df_usage.dropna(subset=['line_item_usage_amount'], inplace=True)
+        # Data is already sanitized, but ensure usage amount is properly handled
+        df_usage = df_usage.dropna(subset=['line_item_usage_amount'])
 
         # --- MODIFICATION TO GET THE SERVICE NAME CORRECTLY ---
         # The human-readable service name is usually in 'product.product_name'.
@@ -82,8 +133,24 @@ def process_parquet_file(file_contents: bytes):
 
         consumption_report['Servicio'] = consumption_report['Servicio'].apply(clean_service_name)
 
+        # SECURITY: Final validation of output data
+        if len(consumption_report) > MAX_RECORDS:
+            consumption_report = consumption_report.head(MAX_RECORDS)
+
+        # Ensure all numeric values are finite
+        consumption_report['CantidadConsumida'] = consumption_report['CantidadConsumida'].replace([float('inf'), float('-inf')], 0)
+
         # Convert to list of dictionaries for JSON response
-        return consumption_report.to_dict(orient='records')
+        result = consumption_report.to_dict(orient='records')
+
+        # Final security check - ensure no sensitive data leakage
+        for record in result:
+            for key, value in record.items():
+                if isinstance(value, str):
+                    # Limit string length and remove potential XSS characters
+                    record[key] = str(value)[:200].replace('<', '').replace('>', '').replace('"', '').replace("'", '')
+
+        return result
 
     except Exception as e:
         # Log the error if you have a logging system
