@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000" # Expose port 8000 of the container to port 8000 on the host
+    volumes:
+      # Map the local backend 'app' directory (containing Python code)
+      # to the '/app/app' directory in the container.
+      - ./backend/app:/app/app
+      # Map requirements.txt for convenience during development
+      - ./backend/requirements.txt:/app/requirements.txt
+    container_name: cur_analyzer_backend
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000" # Expose port 3000 of the container to port 3000 on the host
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    volumes:
+      # Map the local frontend 'src' directory to the '/app/src' directory in the container
+      - ./frontend/src:/app/src
+      # Map the 'public' directory
+      - ./frontend/public:/app/public
+      # Map important configuration files so changes are reflected
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json # or yarn.lock
+      - ./frontend/next.config.ts:/app/next.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      # Prevent local node_modules from overwriting the container's node_modules
+      # and local .next from overwriting the container's .next during development with volumes
+      - /app/node_modules
+      - /app/.next
+    container_name: cur_analyzer_frontend
+    restart: unless-stopped
