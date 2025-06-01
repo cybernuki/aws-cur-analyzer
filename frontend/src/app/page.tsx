@@ -2,7 +2,6 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import ReportTable from '@/components/ReportTable';
-import styles from '@/styles/Home.module.css';
 import { ReportItem } from '@/types/ReportItem';
 import CurSetupModal from '@/components/CurSetupModal';
 
@@ -101,12 +100,16 @@ const [file, setFile] = useState<File | null>(null);
   };
 
   return (
-    <div className={styles.container}>
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-slate-200 flex flex-col items-center justify-center font-sans overflow-hidden">
       {!report ? (
         // Show upload form when no data
-        <main className={styles.main}>
-          <h1 className={styles.title}>Analizador de Consumo AWS (CUR)</h1>
-          <p className={styles.description}>Sube tu archivo <code>.parquet</code> diario del AWS Cost and Usage Report.</p>
+        <main className="flex flex-col items-center w-full max-w-2xl p-8">
+          <h1 className="m-0 mb-4 leading-tight text-5xl text-center font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
+            Analizador de Consumo AWS (CUR)
+          </h1>
+          <p className="leading-relaxed text-lg text-center text-slate-300 m-0 mb-12 font-normal">
+            Sube tu archivo <code className="bg-blue-400/10 text-blue-400 px-2 py-1 rounded-md font-mono text-base font-semibold">.parquet</code> diario del AWS Cost and Usage Report.
+          </p>
 
           {/* Button to open CUR setup modal */}
           <div className="mb-4">
@@ -118,26 +121,32 @@ const [file, setFile] = useState<File | null>(null);
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.fileInputContainer}>
+          <form onSubmit={handleSubmit} className="flex flex-col items-center gap-8 p-12 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl shadow-2xl w-full transition-all duration-300 hover:bg-white/8 hover:border-white/20">
+            <div className="relative w-full">
               <input
                 type="file"
                 id="fileInput"
                 onChange={handleFileChange}
                 accept=".parquet"
-                className={styles.fileInputHidden}
+                className="absolute opacity-0 w-0 h-0 overflow-hidden"
               />
-              <label htmlFor="fileInput" className={styles.fileInputLabel}>
-                <span className={styles.fileInputButton}>Seleccionar archivo</span>
-                <span className={styles.fileInputText}>
+              <label htmlFor="fileInput" className="flex items-center w-full p-4 bg-white/5 border-2 border-dashed border-white/20 rounded-2xl text-slate-200 text-base font-medium cursor-pointer transition-all duration-300 outline-none hover:bg-white/8 hover:border-blue-400/50 focus-within:border-blue-400 focus-within:shadow-lg focus-within:shadow-blue-400/10">
+                <span className="bg-gradient-to-r from-blue-500 to-blue-700 text-white border-none px-6 py-3 rounded-xl font-semibold text-sm mr-4 transition-all duration-200 flex-shrink-0 hover:from-blue-600 hover:to-blue-800 hover:-translate-y-0.5">
+                  Seleccionar archivo
+                </span>
+                <span className="text-slate-200 text-sm opacity-80 overflow-hidden text-ellipsis whitespace-nowrap">
                   {file ? file.name : 'Ningún archivo seleccionado'}
                 </span>
               </label>
             </div>
-            <button type="submit" disabled={isLoading || !file} className={styles.submitButton}>
+            <button
+              type="submit"
+              disabled={isLoading || !file}
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 border-none rounded-2xl cursor-pointer text-lg font-semibold transition-all duration-300 shadow-lg shadow-emerald-500/30 min-w-52 disabled:bg-white/10 disabled:text-slate-500 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none enabled:hover:from-emerald-600 enabled:hover:to-emerald-700 enabled:hover:-translate-y-1 enabled:hover:shadow-xl enabled:hover:shadow-emerald-500/40"
+            >
               {isLoading ? (
-                <div className={styles.loading}>
-                  <div className={styles.loadingSpinner}></div>
+                <div className="flex items-center gap-2 text-blue-400 font-medium">
+                  <div className="w-5 h-5 border-2 border-blue-400/20 border-t-blue-400 rounded-full animate-spin"></div>
                   Procesando...
                 </div>
               ) : (
@@ -146,7 +155,11 @@ const [file, setFile] = useState<File | null>(null);
             </button>
           </form>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {error && (
+            <p className="text-red-400 bg-red-400/10 border border-red-400/20 px-6 py-4 rounded-xl text-center font-medium mt-4 backdrop-blur-lg">
+              {error}
+            </p>
+          )}
         </main>
       ) : (
         // Show table with upload option
