@@ -21,7 +21,9 @@ services:
     depends_on:
       - backend
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:8000
+      # Variables para el proxy (NO son NEXT_PUBLIC porque son server-side)
+      AWS_LAMBDA_URL: "localhost:8000"
+      AWS_LAMBDA_API_KEY: "api-key"
     volumes:
       # Map the local frontend 'src' directory to the '/app/src' directory in the container
       - ./frontend/src:/app/src

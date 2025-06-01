@@ -34,5 +34,4 @@ COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 
-# NEXT_PUBLIC_API_URL will be provided by docker-compose or the deployment environment
 CMD ["npm", "start"]

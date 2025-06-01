@@ -71,8 +71,7 @@ const [file, setFile] = useState<File | null>(null);
     formData.append('file', file);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/upload-parquet/`, {
+      const response = await fetch('/api/upload-parquet', {
         method: 'POST',
         body: formData,
       });
