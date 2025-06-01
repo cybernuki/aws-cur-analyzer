@@ -4,7 +4,7 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import ReportTable from '@/components/ReportTable';
 import styles from '@/styles/Home.module.css';
 import { ReportItem } from '@/types/ReportItem';
-import HelpModal from '@/components/HelpModal';
+import CurSetupModal from '@/components/CurSetupModal';
 
 // Security configuration
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
@@ -33,6 +33,7 @@ const [file, setFile] = useState<File | null>(null);
   const [report, setReport] = useState<ReportItem[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [isCurSetupModalOpen, setIsCurSetupModalOpen] = useState<boolean>(false);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -107,14 +108,31 @@ const [file, setFile] = useState<File | null>(null);
           <h1 className={styles.title}>Analizador de Consumo AWS (CUR)</h1>
           <p className={styles.description}>Sube tu archivo <code>.parquet</code> diario del AWS Cost and Usage Report.</p>
 
+          {/* Button to open CUR setup modal */}
+          <div className="mb-4">
+            <button
+              onClick={() => setIsCurSetupModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              📊 ¿Cómo generar archivos .parquet de AWS CUR?
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.fileInputContainer}>
               <input
                 type="file"
+                id="fileInput"
                 onChange={handleFileChange}
                 accept=".parquet"
-                className={styles.fileInput}
+                className={styles.fileInputHidden}
               />
+              <label htmlFor="fileInput" className={styles.fileInputLabel}>
+                <span className={styles.fileInputButton}>Seleccionar archivo</span>
+                <span className={styles.fileInputText}>
+                  {file ? file.name : 'Ningún archivo seleccionado'}
+                </span>
+              </label>
             </div>
             <button type="submit" disabled={isLoading || !file} className={styles.submitButton}>
               {isLoading ? (
@@ -134,7 +152,10 @@ const [file, setFile] = useState<File | null>(null);
         // Show table with upload option
         <ReportTable data={report} onNewUpload={handleNewUpload} />
       )}
-      <HelpModal />
+      <CurSetupModal
+        isOpen={isCurSetupModalOpen}
+        onClose={() => setIsCurSetupModalOpen(false)}
+      />
     </div>
   );
 }

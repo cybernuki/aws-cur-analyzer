@@ -81,7 +81,19 @@
   width: 100%;
 }
 
-.fileInput {
+/* Hide the default file input */
+.fileInputHidden {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Custom file input label */
+.fileInputLabel {
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 1rem 1.5rem;
   background: rgba(255, 255, 255, 0.05);
@@ -95,32 +107,43 @@
   outline: none;
 }
 
-.fileInput:hover {
+.fileInputLabel:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(96, 165, 250, 0.5);
 }
 
-.fileInput:focus {
+.fileInputLabel:focus-within {
   border-color: #60a5fa;
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
-.fileInput::file-selector-button {
+/* Custom button inside the file input */
+.fileInputButton {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
   font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
+  font-size: 0.9rem;
   margin-right: 1rem;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.fileInput::file-selector-button:hover {
+.fileInputLabel:hover .fileInputButton {
   background: linear-gradient(135deg, #2563eb, #1e40af);
   transform: translateY(-1px);
+}
+
+/* Text showing selected file */
+.fileInputText {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .submitButton {
@@ -211,9 +234,15 @@
     gap: 1.5rem;
   }
 
-  .fileInput {
+  .fileInputLabel {
     padding: 0.875rem 1.25rem;
     font-size: 0.9rem;
+  }
+
+  .fileInputButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    margin-right: 0.75rem;
   }
 
   .submitButton {
@@ -241,12 +270,12 @@
     gap: 1.25rem;
   }
 
-  .fileInput {
+  .fileInputLabel {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
   }
 
-  .fileInput::file-selector-button {
+  .fileInputButton {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
     margin-right: 0.75rem;
