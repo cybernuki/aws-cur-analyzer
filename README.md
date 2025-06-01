@@ -29,17 +29,26 @@ This tool helps you quickly get insights into your AWS service consumption direc
 ## Project Structure
 ```text
 aws-cur-analyzer/
-├── backend/            # FastAPI application
-│   ├── app/
+├── backend/
+│   ├── src/                
+│   │   └── app/           
+│   │       ├── main.py     
+│   │       └── processor.py
 │   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/           # Next.js application
-│   ├── components/
-│   ├── pages/
-│   ├── public/
+│   └── requirements.txt    
+├── frontend/
+│   ├── src/               
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── styles/
+│   │   └── types/
+│   ├── public/             
 │   ├── Dockerfile
-│   └── package.json
-├── docker-compose.yml  # Docker Compose configuration
+│   ├── next.config.js     
+│   ├── package.json       
+│   ├── package-lock.json  
+│   └── tsconfig.json      
+├── docker-compose.yml
 └── README.md
 ```
 ## Prerequisites
